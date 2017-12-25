@@ -16,6 +16,19 @@
 
 #include <stdint.h>
 #include <sys/sem.h>
+#include <iostream>
+#include <errno.h>
+using namespace std;
+
+#define DEFAULT_FILE_PERMS 0644
+
+#define BIT_ENABLED(WORD, BIT) (((WORD) & (BIT)) != 0)
+
+#define NOTSUP_RETURN(FAILVALUE) do { errno = ENOTSUP ; return FAILVALUE; } while (0)
+
+#define UNUSED_ARG(a) (a)
+
+extern uint32_t crc32 (const char *string);
 
 // Place all additions (especially function declarations) within extern "C" {}
 #ifdef __cplusplus
@@ -43,6 +56,7 @@ extern "C"
 #   define SEM_UNDO 0
 # endif /* SEM_UNDO */
 
+/**
 struct sembuf
 {
     /// semaphore #
@@ -53,7 +67,7 @@ struct sembuf
 
     /// operation flags
     short sem_flg;
-};
+};*/
 
 union semun
 {

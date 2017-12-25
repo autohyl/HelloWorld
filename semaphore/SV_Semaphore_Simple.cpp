@@ -1,5 +1,4 @@
 #include "SV_Semaphore_Simple.h"
-#include "include/os_sem.h"
 
 void
 SV_Semaphore_Simple::dump (void) const
@@ -12,7 +11,7 @@ SV_Semaphore_Simple::control (int cmd,
                                   int value,
                                   u_short semnum) const
 {
-  ACE_TRACE ("SV_Semaphore_Simple::control");
+  cout << "SV_Semaphore_Simple::control" << endl;
   if (this->internal_id_ == -1)
     return -1;
   else
@@ -20,20 +19,31 @@ SV_Semaphore_Simple::control (int cmd,
       semun semctl_arg;
 
       semctl_arg.val = value;
-      return ACE_OS::semctl (this->internal_id_,
+      return ::semctl (this->internal_id_,
                              semnum,
                              cmd,
                              semctl_arg);
     }
 }
 
-// General ACE_SV_Semaphore operation. Increment or decrement by a
+#ifdef HAS_SYSV_IPC
+int
+SV_Semaphore_Simple::init (key_t k, int i)
+{
+  cout << "SV_Semaphore_Simple::init") << endl;
+  this->key_ = k;
+  this->internal_id_ = i;
+  return 0;
+}
+#endif
+
+// General SV_Semaphore operation. Increment or decrement by a
 // specific amount (positive or negative; amount can`t be zero).
 
 int
 SV_Semaphore_Simple::op (short val, u_short n, short flags) const
 {
-  ACE_TRACE ("SV_Semaphore_Simple::op");
+  cout << "SV_Semaphore_Simple::op" << endl;
   sembuf op_op;
 
   op_op.sem_num = n;
@@ -57,10 +67,10 @@ SV_Semaphore_Simple::open (key_t k,
                                u_short n,
                                mode_t perms)
 {
-  ACE_TRACE ("SV_Semaphore_Simple::open");
+  cout << "SV_Semaphore_Simple::open" << endl;
   union semun ivalue;
 
-#ifdef ACE_HAS_SYSV_IPC
+#ifdef HAS_SYSV_IPC
   if (k == IPC_PRIVATE || k == static_cast<key_t> (ACE_INVALID_SEM_KEY))
     return -1;
 #endif
@@ -69,14 +79,14 @@ SV_Semaphore_Simple::open (key_t k,
   this->key_ = k;
   this->sem_number_ = n;
 
-  this->internal_id_ = ACE_OS::semget (this->key_, n, perms | flags);
+  this->internal_id_ = ::semget (this->key_, n, perms | flags);
 
   if (this->internal_id_ == -1)
     return -1;
 
-  if (ACE_BIT_ENABLED (flags, IPC_CREAT))
+  if (BIT_ENABLED (flags, IPC_CREAT))
     for (int i = 0; i < n; i++)
-      if (ACE_OS::semctl (this->internal_id_, i, SETVAL, ivalue) == -1)
+      if (::semctl (this->internal_id_, i, SETVAL, ivalue) == -1)
         return -1;
 
   return 0;
@@ -89,9 +99,9 @@ SV_Semaphore_Simple::SV_Semaphore_Simple (key_t k,
                                                   mode_t perms)
   : key_ (k)
 {
-  ACE_TRACE ("SV_Semaphore_Simple::SV_Semaphore_Simple");
+  cout << "SV_Semaphore_Simple::SV_Semaphore_Simple" << endl;
   if (this->open (k, flags, initial_value, n, perms) == -1)
-    ACELIB_ERROR ((LM_ERROR,  ACE_TEXT ("%p\n"),  ACE_TEXT ("ACE_SV_Semaphore::ACE_SV_Semaphore")));
+    cout << "error SV_Semaphore::SV_Semaphore" << endl;
 }
 
 // Convert name to key.  This function is used internally to create keys
@@ -104,41 +114,27 @@ SV_Semaphore_Simple::SV_Semaphore_Simple (key_t k,
 key_t
 SV_Semaphore_Simple::name_2_key (const char *name)
 {
-  ACE_TRACE ("SV_Semaphore_Simple::name_2_key");
+  cout << "SV_Semaphore_Simple::name_2_key" << endl;
 
   if (name == 0)
     {
-      errno = EINVAL;
-#ifdef ACE_HAS_SYSV_IPC
+#ifdef HAS_SYSV_IPC
       return static_cast<key_t> (ACE_INVALID_SEM_KEY);
 #else
-      key_t ret = ACE_DEFAULT_SEM_KEY;
+      key_t ret = DEFAULT_SEM_KEY;
       return ret;
 #endif
     }
 
-  // Basically "hash" the values in the <name>.  This won't
-  // necessarily guarantee uniqueness of all keys.
-  // But (IMHO) CRC32 is good enough for most purposes (Carlos)
-#if defined (ACE_WIN32) && defined (_MSC_VER)
-  // The cast below is legit...
-#  pragma warning(push)
-#  pragma warning(disable : 4312)
-#endif /* defined (ACE_WIN32) && defined (_MSC_VER) */
-
-#ifdef ACE_HAS_SYSV_IPC
-  return (key_t) ACE::crc32 (name);
+#ifdef HAS_SYSV_IPC
+  return (key_t) crc32 (name);
 #else
-  key_t ret = ACE_DEFAULT_SEM_KEY;
+  key_t ret = DEFAULT_SEM_KEY;
   return ret;
 #endif
-
-#if defined (ACE_WIN32) && defined (_MSC_VER)
-#  pragma warning(pop)
-#endif /* defined (ACE_WIN32) && defined (_MSC_VER) */
 }
 
-// Open or create a ACE_SV_Semaphore.  We return 1 if all is OK, else
+// Open or create a SV_Semaphore.  We return 1 if all is OK, else
 // 0.
 
 int
@@ -148,15 +144,15 @@ SV_Semaphore_Simple::open (const char *name,
                                u_short n,
                                mode_t perms)
 {
-  ACE_TRACE ("SV_Semaphore_Simple::open");
+  cout << "SV_Semaphore_Simple::open" << endl;
 
-  key_t key = ACE_DEFAULT_SEM_KEY;
+  key_t key = DEFAULT_SEM_KEY;
 
-#ifdef ACE_HAS_SYSV_IPC
+#ifdef HAS_SYSV_IPC
   if (name != 0)
     key = this->name_2_key (name);
 #else
-  ACE_UNUSED_ARG (name);
+  UNUSED_ARG (name);
 #endif
 
   return this->open (key, flags, initial_value, n, perms);
@@ -168,63 +164,42 @@ SV_Semaphore_Simple::SV_Semaphore_Simple (const char *name,
                                                   u_short n,
                                                   mode_t perms)
 {
-  ACE_TRACE ("SV_Semaphore_Simple::SV_Semaphore_Simple");
+  cout << "SV_Semaphore_Simple::SV_Semaphore_Simple" << endl;
   if (this->open (name,
                   flags,
                   initial_value,
                   n,
                   perms) == -1)
-    ACELIB_ERROR ((LM_ERROR,
-                ACE_TEXT ("%p\n"),
-                ACE_TEXT ("SV_Semaphore_Simple::SV_Semaphore_Simple")));
+    cout << "error SV_Semaphore_Simple::SV_Semaphore_Simple" << endl;
 }
-
-#if defined (ACE_HAS_WCHAR)
-SV_Semaphore_Simple::SV_Semaphore_Simple (const wchar_t *name,
-                                                  short flags,
-                                                  int initial_value,
-                                                  u_short nsems,
-                                                  mode_t perms)
-{
-  ACE_TRACE ("SV_Semaphore_Simple::SV_Semaphore_Simple(wchar_t)");
-  if (this->open (ACE_Wide_To_Ascii (name).char_rep (),
-                  flags,
-                  initial_value,
-                  nsems,
-                  perms) == -1)
-    ACELIB_ERROR ((LM_ERROR,
-                ACE_TEXT ("%p\n"),
-                ACE_TEXT ("SV_Semaphore_Simple::SV_Semaphore_Simple")));
-}
-#endif /* ACE_HAS_WCHAR */
 
 SV_Semaphore_Simple::~SV_Semaphore_Simple (void)
 {
-  ACE_TRACE ("SV_Semaphore_Simple::~SV_Semaphore_Simple");
+  cout << "SV_Semaphore_Simple::~SV_Semaphore_Simple" << endl;
   this->close ();
 }
 
 SV_Semaphore_Simple::SV_Semaphore_Simple (void) :
   sem_number_ (0)
 {
-  ACE_TRACE ("SV_Semaphore_Simple::SV_Semaphore_Simple");
-#ifdef ACE_HAS_SYSV_IPC
+  cout << "SV_Semaphore_Simple::SV_Semaphore_Simple" << endl;
+#ifdef HAS_SYSV_IPC
   this->init ();
 #endif
 }
 
 // Remove all SV_Semaphores associated with a particular key.  This
 // call is intended to be called from a server, for example, when it
-// is being shut down, as we do an IPC_RMID on the ACE_SV_Semaphore,
+// is being shut down, as we do an IPC_RMID on the SV_Semaphore,
 // regardless of whether other processes may be using it or not.  Most
 // other processes should use close() below.
 
 int
 SV_Semaphore_Simple::remove (void) const
 {
-  ACE_TRACE ("SV_Semaphore_Simple::remove");
+  cout << "SV_Semaphore_Simple::remove" << endl;
   int const result = this->control (IPC_RMID);
-#ifdef ACE_HAS_SYSV_IPC
+#ifdef HAS_SYSV_IPC
   ((SV_Semaphore_Simple *) this)->init ();
 #endif
   return result;

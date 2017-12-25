@@ -11,10 +11,7 @@
 #ifndef IPC_SV_SEMAPHORE_SIMPLE_H
 #define IPC_SV_SEMAPHORE_SIMPLE_H
 
-#include "ace/os_include/sys/os_stat.h"
-#include "ace/os_include/sys/os_ipc.h"
-#include "ace/os_include/sys/os_sem.h"
-#include "ace/Default_Constants.h"
+#include "include/os_sem.h"
 
 #define DEFAULT_SEM_KEY 1234
 
@@ -41,12 +38,12 @@ public:
                            short flags = SV_Semaphore_Simple::CREATE,
                            int initial_value = 1,
                            u_short nsems = 1,
-                           mode_t perms = ACE_DEFAULT_FILE_PERMS);
+                           mode_t perms = DEFAULT_FILE_PERMS);
   SV_Semaphore_Simple (const char *name,
                            short flags = SV_Semaphore_Simple::CREATE,
                            int initial_value = 1,
                            u_short nsems = 1,
-                           mode_t perms = ACE_DEFAULT_FILE_PERMS);
+                           mode_t perms = DEFAULT_FILE_PERMS);
 
   ~SV_Semaphore_Simple (void);
 
@@ -54,7 +51,7 @@ public:
             short flags = SV_Semaphore_Simple::CREATE,
             int initial_value = 1,
             u_short nsems = 1,
-            mode_t perms = ACE_DEFAULT_FILE_PERMS);
+            mode_t perms = DEFAULT_FILE_PERMS);
 
   /// Open or create one or more SV_Semaphores.  We return 0 if all is
   /// OK, else -1.
@@ -62,7 +59,7 @@ public:
             short flags = SV_Semaphore_Simple::CREATE,
             int initial_value = 1,
             u_short nsems = 1,
-            mode_t perms = ACE_DEFAULT_FILE_PERMS);
+            mode_t perms = DEFAULT_FILE_PERMS);
 
   /// Close a ACE_SV_Semaphore, marking it as invalid for subsequent
   /// operations...
@@ -132,7 +129,22 @@ protected:
   /// Number of semaphores we're creating.
   int sem_number_;
 
+#ifdef HAS_SYSV_IPC
+  /**
+   * Convert name to key This function is used internally to create
+   * keys for the semaphores. A valid name contains letters and
+   * digits only and MUST start with a letter.
+   *
+   * The method for generating names is not very sophisticated, so
+   * caller should not pass strings which match each other for the first
+   * LUSED characters when he wants to get a different key.
+   */
+  int init (key_t k = static_cast<key_t> (ACE_INVALID_SEM_KEY),
+            int i = -1);
+#endif
+  
   key_t name_2_key (const char *name);
+
 };
 
 #include "SV_Semaphore_Simple.inl"

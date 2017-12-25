@@ -7,7 +7,7 @@ SV_Semaphore_Simple::control (int cmd,
 {
   cout << "SV_Semaphore_Simple::control" << endl;
   return this->internal_id_ == -1 ?
-    -1 : ACE_OS::semctl (this->internal_id_, n, cmd, arg);
+    -1 : semctl (this->internal_id_, n, cmd, arg);
 }
 
 // Close a SV_Semaphore, marking it as invalid for subsequent
@@ -17,7 +17,11 @@ inline int
 SV_Semaphore_Simple::close (void)
 {
   cout << "SV_Semaphore_Simple::close" << endl;
-  return -1;
+#ifdef HAS_SYSV_IPC
+  return this->init ();
+#else
+  NOTSUP_RETURN (-1);
+#endif
 }
 
 // General SV_Semaphore operation on an array of SV_Semaphores.
