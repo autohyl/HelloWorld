@@ -38,12 +38,12 @@ public:
                            short flags = SV_Semaphore_Simple::CREATE,
                            int initial_value = 1,
                            u_short nsems = 1,
-                           mode_t perms = DEFAULT_FILE_PERMS);
+                           mode_t perms = SEM_DEFAULT_FILE_PERMS);
   SV_Semaphore_Simple (const char *name,
                            short flags = SV_Semaphore_Simple::CREATE,
                            int initial_value = 1,
                            u_short nsems = 1,
-                           mode_t perms = DEFAULT_FILE_PERMS);
+                           mode_t perms = SEM_DEFAULT_FILE_PERMS);
 
   ~SV_Semaphore_Simple (void);
 
@@ -51,7 +51,7 @@ public:
             short flags = SV_Semaphore_Simple::CREATE,
             int initial_value = 1,
             u_short nsems = 1,
-            mode_t perms = DEFAULT_FILE_PERMS);
+            mode_t perms = SEM_DEFAULT_FILE_PERMS);
 
   /// Open or create one or more SV_Semaphores.  We return 0 if all is
   /// OK, else -1.
@@ -59,7 +59,7 @@ public:
             short flags = SV_Semaphore_Simple::CREATE,
             int initial_value = 1,
             u_short nsems = 1,
-            mode_t perms = DEFAULT_FILE_PERMS);
+            mode_t perms = SEM_DEFAULT_FILE_PERMS);
 
   /// Close a ACE_SV_Semaphore, marking it as invalid for subsequent
   /// operations...
@@ -139,7 +139,7 @@ protected:
    * caller should not pass strings which match each other for the first
    * LUSED characters when he wants to get a different key.
    */
-  int init (key_t k = static_cast<key_t> (ACE_INVALID_SEM_KEY),
+  int init (key_t k = static_cast<key_t> (INVALID_SEM_KEY),
             int i = -1);
 #endif
   

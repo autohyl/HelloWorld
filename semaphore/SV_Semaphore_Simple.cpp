@@ -30,7 +30,7 @@ SV_Semaphore_Simple::control (int cmd,
 int
 SV_Semaphore_Simple::init (key_t k, int i)
 {
-  cout << "SV_Semaphore_Simple::init") << endl;
+  cout << "SV_Semaphore_Simple::init" << endl;
   this->key_ = k;
   this->internal_id_ = i;
   return 0;
@@ -71,7 +71,7 @@ SV_Semaphore_Simple::open (key_t k,
   union semun ivalue;
 
 #ifdef HAS_SYSV_IPC
-  if (k == IPC_PRIVATE || k == static_cast<key_t> (ACE_INVALID_SEM_KEY))
+  if (k == IPC_PRIVATE || k == static_cast<key_t> (INVALID_SEM_KEY))
     return -1;
 #endif
 
@@ -119,7 +119,7 @@ SV_Semaphore_Simple::name_2_key (const char *name)
   if (name == 0)
     {
 #ifdef HAS_SYSV_IPC
-      return static_cast<key_t> (ACE_INVALID_SEM_KEY);
+      return static_cast<key_t> (INVALID_SEM_KEY);
 #else
       key_t ret = DEFAULT_SEM_KEY;
       return ret;

@@ -229,14 +229,13 @@ SV_Semaphore_Complex::SV_Semaphore_Complex (const char *name,
                                                     mode_t perms)
 {
   cout << "SV_Semaphore_Complex::SV_Semaphore_Complex" << endl;
+  key_t key = DEFAULT_SEM_KEY;
 #ifdef HAS_SYSV_IPC
   if (name != 0)
     key = this->name_2_key (name);
 #else
   UNUSED_ARG (name);
 #endif
-
-  key_t key = DEFAULT_SEM_KEY;
 
   if (this->open (key, flags, initial_value, nsems, perms) == -1)
     cout << "error SV_Semaphore_Complex" << endl;

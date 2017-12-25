@@ -20,7 +20,9 @@
 #include <errno.h>
 using namespace std;
 
-#define DEFAULT_FILE_PERMS 0644
+#define SEM_DEFAULT_FILE_PERMS 0644
+
+#define INVALID_SEM_KEY -1
 
 #define BIT_ENABLED(WORD, BIT) (((WORD) & (BIT)) != 0)
 

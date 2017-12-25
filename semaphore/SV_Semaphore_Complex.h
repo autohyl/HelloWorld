@@ -58,12 +58,12 @@ public:
                             short create = SV_Semaphore_Complex::CREATE,
                             int initial_value = 1,
                             u_short nsems = 1,
-                            mode_t perms = DEFAULT_FILE_PERMS);
+                            mode_t perms = SEM_DEFAULT_FILE_PERMS);
   SV_Semaphore_Complex (const char *name,
                             short create = SV_Semaphore_Complex::CREATE,
                             int initial_value = 1,
                             u_short nsems = 1,
-                            mode_t perms = DEFAULT_FILE_PERMS);
+                            mode_t perms = SEM_DEFAULT_FILE_PERMS);
   ~SV_Semaphore_Complex (void);
 
   /// Open or create an array of SV_Semaphores.  We return 0 if all is
@@ -72,7 +72,7 @@ public:
             short flags = SV_Semaphore_Simple::CREATE,
             int initial_value = 1,
             u_short nsems = 1,
-            mode_t perms = DEFAULT_FILE_PERMS);
+            mode_t perms = SEM_DEFAULT_FILE_PERMS);
 
   /// Open or create an array of SV_Semaphores.  We return 0 if all is
   /// OK, else -1.
@@ -80,7 +80,7 @@ public:
             short flags = SV_Semaphore_Simple::CREATE,
             int initial_value = 1,
             u_short nsems = 1,
-            mode_t perms = DEFAULT_FILE_PERMS);
+            mode_t perms = SEM_DEFAULT_FILE_PERMS);
 
   /**
    * Close an ACE_SV_Semaphore. Unlike the remove() method, this
