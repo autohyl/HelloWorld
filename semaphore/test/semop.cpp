@@ -45,7 +45,7 @@ int main() {
 	int sem_id = semget(123, 1, IPC_CREAT | 0666);
 	if (sem_id == -1) 
 		cout << "semget error" << endl;
-		
+
 	/*
 	if (semop (sem_id, &op_lock_[0], 2) == -1)
 		cout << "semop error" << endl;
@@ -53,7 +53,8 @@ int main() {
 	semun semctl_arg;
 	semctl_arg.val = 0;
 	int semval = semctl(sem_id, 1, GETVAL, semctl_arg);
-	cout << "semval: " << semval << endl;*/
+	cout << "semval: " << semval << endl;
+	*/
 
 	union semun num;
 	num.val = 1;
