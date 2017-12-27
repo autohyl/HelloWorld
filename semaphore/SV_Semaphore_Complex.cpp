@@ -9,7 +9,7 @@ SV_Semaphore_Complex::dump (void) const
 // initial value of process
 const int SV_Semaphore_Complex::BIGCOUNT_ = 10000;
 
-// Define the ACE_SV_Semaphore operation arrays for the semop() calls.
+// Define the SV_Semaphore operation arrays for the semop() calls.
 sembuf SV_Semaphore_Complex::op_lock_[2] =
 {
   {0, 0, 0},                    // Wait for [0] (lock) to equal 0
@@ -87,9 +87,9 @@ SV_Semaphore_Complex::open (key_t k,
           // There is a race condition here. There is the possibility
           // that between the <semget> above and the <semop> below,
           // another process can call out <close> function which can
-          // remove the <ACE_SV_Semaphore> if that process is the last
+          // remove the <SV_Semaphore> if that process is the last
           // one using it.  Therefor we handle the error condition of
-          // an invalid <ACE_SV_Semaphore> ID specifically below, and
+          // an invalid <SV_Semaphore> ID specifically below, and
           // if it does happen, we just go back and create it again.
           result = ::semop (this->internal_id_,
                                   &SV_Semaphore_Complex::op_lock_[0],
@@ -101,9 +101,11 @@ SV_Semaphore_Complex::open (key_t k,
         return -1;
 
       // Get the value of the process counter. If it equals 0, then no
-      // one has initialized the ACE_SV_Semaphore yet.
+      // one has initialized the SV_Semaphore yet.
 
       int semval = SV_Semaphore_Simple::control (GETVAL, 0, 1);
+
+      cout << "SV_Semaphore_Complex::open: semval: " << semval << endl;
 
       if (semval == -1)
 #ifdef HAS_SYSV_IPC
@@ -116,7 +118,7 @@ SV_Semaphore_Complex::open (key_t k,
         {
           // We should initialize by doing a SETALL, but that would
           // clear the adjust value that we set when we locked the
-          // ACE_SV_Semaphore above. Instead we do system calls to
+          // SV_Semaphore above. Instead we do system calls to
           // initialize [1], as well as all the nsems SV_Semaphores.
 
           if (SV_Semaphore_Simple::control (SETVAL,
@@ -165,11 +167,11 @@ SV_Semaphore_Complex::open (const char *name,
                      flags, initial_value, nsems, perms);
 }
 
-// Close a ACE_SV_Semaphore.  Unlike the remove above, this function
+// Close a SV_Semaphore.  Unlike the remove above, this function
 // is for a process to call before it exits, when it is done with the
-// ACE_SV_Semaphore.  We "decrement" the counter of processes using
-// the ACE_SV_Semaphore, and if this was the last one, we can remove
-// the ACE_SV_Semaphore.
+// SV_Semaphore.  We "decrement" the counter of processes using
+// the SV_Semaphore, and if this was the last one, we can remove
+// the SV_Semaphore.
 
 int
 SV_Semaphore_Complex::close (void)
@@ -181,7 +183,7 @@ SV_Semaphore_Complex::close (void)
     return -1;
 #endif
 
-  // The following semop() first gets a lock on the ACE_SV_Semaphore,
+  // The following semop() first gets a lock on the SV_Semaphore,
   // then increments [1] - the process number.
 
   if (::semop (this->internal_id_,
@@ -190,7 +192,7 @@ SV_Semaphore_Complex::close (void)
     return -1;
 
   // Now that we have a lock, read the value of the process counter to
-  // see if this is the last reference to the ACE_SV_Semaphore. There
+  // see if this is the last reference to the SV_Semaphore. There
   // is a race condition here - see the comments in create ().
 
   if ((semval = SV_Semaphore_Simple::control (GETVAL, 0, 1)) == -1)

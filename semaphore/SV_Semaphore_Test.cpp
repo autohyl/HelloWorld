@@ -38,11 +38,21 @@ child (char *shm)
 {
   SV_Semaphore_Complex sem (SEM_KEY, SV_Semaphore_Complex::CREATE, 0, 2);
 
-  while (sem.tryacquire (0) == -1)
+#ifndef TEST_SEM
+  while (sem.tryacquire (0) == -1) {
+#else
+  if (sem.tryacquire (0) == -1) {
+#endif
     if (errno == EAGAIN)
       cout << "debug spinning in client!" << endl;
     else
       cout << "error client mutex.tryacquire(0)" << endl;
+  }
+#ifdef TEST_SEM
+  else {
+    cout << "error sem.tryacquire (0) == -1" << endl;
+  }
+#endif
 
   for (char *s = (char *) shm; *s != '\0'; s++)
     cout << "debug" << *s << endl;

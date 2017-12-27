@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-const ACE_UINT32 crc_table[] =
+const uint32_t crc_table[] =
     {
       0x00000000L, 0x77073096L, 0xEE0E612CL, 0x990951BAL,
       0x076DC419L, 0x706AF48FL, 0xE963A535L, 0x9E6495A3L,
@@ -71,7 +71,6 @@ const ACE_UINT32 crc_table[] =
   /*****************************************************************/
   /*                   End of CRC Lookup Table                     */
   /*****************************************************************/
-}
 
 #define COMPUTE(var, ch) (var) = (crc_table[(var ^ ch) & 0xFF] ^ (var >> 8))
 
