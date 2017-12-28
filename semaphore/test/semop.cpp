@@ -8,13 +8,13 @@
 using namespace std;
 
 union semun {   
-   short val;          /*SETVAL用的�?*/  
+   short val;
   
-   struct semid_ds* buf; /*IPC_STAT、IPC_SET用的semid_ds结构*/  
+   struct semid_ds* buf;
   
-   unsigned short* array; /*SETALL、GETALL用的数组�?*/  
+   unsigned short* array;
   
-   struct seminfo *__buf;   /*为控制IPC_INFO提供的缓�?*/    
+   struct seminfo *__buf;
 };
 
 sembuf op_lock_[2] =
@@ -42,11 +42,11 @@ int v(int semid) {
 }
 
 int main() {
-	int sem_id = semget(123, 1, IPC_CREAT | 0666);
+	int nsems = 2;
+	int sem_id = semget(124, (u_short) 2 + nsems, IPC_CREAT | 0666);
 	if (sem_id == -1) 
 		cout << "semget error" << endl;
 
-	/*
 	if (semop (sem_id, &op_lock_[0], 2) == -1)
 		cout << "semop error" << endl;
 
@@ -54,7 +54,6 @@ int main() {
 	semctl_arg.val = 0;
 	int semval = semctl(sem_id, 1, GETVAL, semctl_arg);
 	cout << "semval: " << semval << endl;
-	*/
 
 	union semun num;
 	num.val = 1;

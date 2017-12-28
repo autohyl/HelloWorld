@@ -91,9 +91,11 @@ SV_Semaphore_Complex::open (key_t k,
           // one using it.  Therefor we handle the error condition of
           // an invalid <SV_Semaphore> ID specifically below, and
           // if it does happen, we just go back and create it again.
+
           result = ::semop (this->internal_id_,
                                   &SV_Semaphore_Complex::op_lock_[0],
                                   2);
+
         }
       while (result == -1 && (errno == EINVAL || errno == EIDRM));
 
@@ -120,7 +122,6 @@ SV_Semaphore_Complex::open (key_t k,
           // clear the adjust value that we set when we locked the
           // SV_Semaphore above. Instead we do system calls to
           // initialize [1], as well as all the nsems SV_Semaphores.
-
           if (SV_Semaphore_Simple::control (SETVAL,
                                                 SV_Semaphore_Complex::BIGCOUNT_,
                                                 1) == -1)

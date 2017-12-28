@@ -5,7 +5,12 @@
 
 #if defined (HAS_SYSV_IPC)
 
-static Shared_Memory_SV alloc;
+#define SHM_KEY (key_t) 5678
+#define SHMSZ 27
+
+static Shared_Memory_SV alloc(SHM_KEY,
+                                   SHMSZ,
+                                   Shared_Memory_SV::CREATE);
 
 const int SEM_KEY = DEFAULT_SEM_KEY + 1;
 
@@ -55,7 +60,7 @@ child (char *shm)
 #endif
 
   for (char *s = (char *) shm; *s != '\0'; s++)
-    cout << "debug" << *s << endl;
+    cout << "debug " << *s << " ";
 
   cout << endl;
 
@@ -73,9 +78,8 @@ main (int, char *[])
     {
     case -1:
       cout << "error fork failed" << endl;
-      /* NOTREACHED */
+      return 0;
     case 0:
-      // Child.
       return child (shm);
     default:
       return parent (shm);
