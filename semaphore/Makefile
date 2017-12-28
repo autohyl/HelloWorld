@@ -1,5 +1,5 @@
 CC = g++
-FLAG = -g -DHAS_SYSV_IPC -DTEST_SEM
+FLAG = -g -DHAS_SYSV_IPC #-DTEST_SEM
 BASE=../
 SM=$(BASE)shared_memory/
 INCLUDE = -I./ -I./include -I$(SM) -I$(SM)include -I$(BASE)os_include
