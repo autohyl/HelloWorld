@@ -1,10 +1,14 @@
 /* -*- C++ -*- */
+
+#ifndef MSG_DATA_H
+#define MSG_DATA_H
 #include <string.h>
+#include <pwd.h>
 #include "os_msg_queue.h"
 #include "../SV_Message.h"
 
 #define MSGSZ 128
-#define SRV_KEY DEFAULT_SHM_KEY
+#define SRV_KEY 123
 #define SRV_ID 1
 
 class Message_Data
@@ -49,4 +53,14 @@ public:
     Message_Data (p, login, message)
   {}
 };
+
+inline char* cuserid(char* user, int maxLen = 0) {
+  struct passwd *pwd;
+  pwd = getpwuid(getuid());
+  if (user != 0)
+    memcpy(user, pwd->pw_name, maxLen);
+  return pwd->pw_name;
+}
+
+#endif
 
