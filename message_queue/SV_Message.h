@@ -12,6 +12,8 @@
 #ifndef SV_MESSAGE_H
 #define SV_MESSAGE_H
 
+#include "include/os_msg_queue.h"
+
 /**
  * @class SV_Message
  *
