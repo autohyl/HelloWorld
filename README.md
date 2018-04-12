@@ -1,2 +1,1 @@
-# ipc_linux
-ipc_linux
+linux下的ipc封装
